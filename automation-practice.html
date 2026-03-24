@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoLab — QA Practice Ground</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c27;
+    --border: #2a2a3d;
+    --accent: #00ff88;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --danger: #ef4444;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --mono: 'Space Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--accent);
+    padding: 1rem 2rem 1rem 0;
+    border-right: 1px solid var(--border);
+    margin-right: 1rem;
+    letter-spacing: -1px;
+  }
+
+  .nav-logo span { color: var(--text); }
+
+  .nav-tabs {
+    display: flex;
+    gap: 0;
+    list-style: none;
+    height: 100%;
+  }
+
+  .nav-tab {
+    padding: 1.1rem 1.4rem;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .nav-tab:hover { color: var(--text); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 2.5rem 2rem; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .page-header {
+    margin-bottom: 2.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 0.4rem;
+  }
+
+  .page-header p {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .tag-green { background: rgba(0,255,136,0.15); color: var(--accent); }
+  .tag-purple { background: rgba(124,58,237,0.2); color: #a78bfa; }
+  .tag-yellow { background: rgba(245,158,11,0.15); color: var(--accent3); }
+  .tag-red { background: rgba(239,68,68,0.15); color: #f87171; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── FORM ELEMENTS ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-family: var(--mono);
+  }
+
+  input, select, textarea {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,255,136,0.1);
+  }
+
+  input.error { border-color: var(--danger); }
+  input.success { border-color: var(--accent); }
+
+  .error-msg {
+    font-size: 0.72rem;
+    color: #f87171;
+    font-family: var(--mono);
+    min-height: 1rem;
+  }
+
+  textarea { resize: vertical; min-height: 80px; }
+
+  select option { background: var(--surface2); }
+
+  .checkbox-group { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.3rem; }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+
+  .checkbox-item input[type="checkbox"],
+  .checkbox-item input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+  }
+
+  /* ── BUTTONS ── */
+  .btn {
+    padding: 0.65rem 1.4rem;
+    border-radius: 8px;
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0a0a0f;
+  }
+  .btn-primary:hover { background: #00e67a; transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,255,136,0.3); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--text); }
+
+  .btn-danger {
+    background: var(--danger);
+    color: white;
+  }
+  .btn-danger:hover { background: #dc2626; }
+
+  .btn-purple {
+    background: var(--accent2);
+    color: white;
+  }
+  .btn-purple:hover { background: #6d28d9; }
+
+  .btn-yellow {
+    background: var(--accent3);
+    color: #0a0a0f;
+  }
+  .btn-yellow:hover { background: #d97706; }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  .btn-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; align-items: center; }
+
+  /* ── ALERT BOX ── */
+  .alert-box {
+    padding: 1rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: var(--mono);
+    display: none;
+    margin-top: 1rem;
+    border-left: 3px solid;
+  }
+
+  .alert-box.show { display: block; animation: fadeIn 0.3s ease; }
+  .alert-success { background: rgba(0,255,136,0.08); border-color: var(--accent); color: var(--accent); }
+  .alert-error { background: rgba(239,68,68,0.08); border-color: var(--danger); color: #f87171; }
+  .alert-info { background: rgba(124,58,237,0.08); border-color: var(--accent2); color: #a78bfa; }
+  .alert-warning { background: rgba(245,158,11,0.08); border-color: var(--accent3); color: var(--accent3); }
+
+  /* ── TABLE ── */
+  .table-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    outline: none;
+    width: 220px;
+  }
+
+  .search-input:focus { border-color: var(--accent); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead tr {
+    border-bottom: 2px solid var(--border);
+  }
+
+  th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-family: var(--mono);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  th:hover { color: var(--text); }
+  th .sort-icon { margin-left: 0.3rem; opacity: 0.4; }
+  th.sorted .sort-icon { opacity: 1; color: var(--accent); }
+
+  td {
+    padding: 0.8rem 1rem;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody tr { transition: background 0.15s; }
+  tbody tr:hover { background: var(--surface2); }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-family: var(--mono);
+    font-weight: 700;
+  }
+
+  .status-active { background: rgba(0,255,136,0.15); color: var(--accent); }
+  .status-inactive { background: rgba(239,68,68,0.12); color: #f87171; }
+  .status-pending { background: rgba(245,158,11,0.12); color: var(--accent3); }
+
+  .pagination {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 1.2rem;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .page-btn {
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .page-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .page-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 480px;
+    position: relative;
+    animation: slideUp 0.25s ease;
+  }
+
+  .modal h3 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+  }
+
+  .modal p {
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .modal-close:hover { color: var(--text); border-color: var(--text); }
+
+  .modal-footer { display: flex; gap: 0.75rem; justify-content: flex-end; }
+
+  /* ── HOMEPAGE ── */
+  .hero {
+    text-align: center;
+    padding: 4rem 0 3rem;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: -3px;
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 span { color: var(--accent); }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 500px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-top: 3rem;
+  }
+
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .feature-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,255,136,0.1);
+  }
+
+  .feature-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .feature-card h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  .feature-card p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* ── BUTTON SECTION ── */
+  .btn-grid { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+  .counter-display {
+    font-family: var(--mono);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: center;
+    padding: 1rem;
+  }
+
+  /* Toast */
+  #toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 2000;
+  }
+
+  .toast {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    animation: slideInRight 0.3s ease;
+    max-width: 300px;
+    border-left: 3px solid var(--accent);
+  }
+
+  /* ── LOGIN PAGE ── */
+  .login-wrap {
+    max-width: 420px;
+    margin: 3rem auto;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* ── MISC ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.5rem 0;
+  }
+
+  .inline-result {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    padding: 0.5rem 0.8rem;
+    background: var(--surface2);
+    border-radius: 6px;
+    color: var(--accent);
+    display: inline-block;
+    margin-left: 0.5rem;
+  }
+
+  .progress-bar-wrap {
+    background: var(--surface2);
+    border-radius: 100px;
+    height: 8px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 100px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+  @media (max-width: 640px) {
+    .form-grid, .two-col { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 2.2rem; letter-spacing: -1px; }
+    nav { padding: 0 1rem; }
+    .nav-tab { padding: 1rem 0.8rem; font-size: 0.72rem; }
+  }
+
+  /* Loading spinner */
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(0,0,0,0.3);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #result-area {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 1rem;
+    min-height: 1.5rem;
+  }
+</style>
+</head>
+<body>
+
+<nav id="main-nav">
+  <div class="nav-logo">Auto<span>Lab</span></div>
+  <ul class="nav-tabs">
+    <li class="nav-tab active" data-page="home" id="tab-home">Home</li>
+    <li class="nav-tab" data-page="login" id="tab-login">Login</li>
+    <li class="nav-tab" data-page="forms" id="tab-forms">Forms</li>
+    <li class="nav-tab" data-page="buttons" id="tab-buttons">Buttons</li>
+    <li class="nav-tab" data-page="tables" id="tab-tables">Tables</li>
+    <li class="nav-tab" data-page="modals" id="tab-modals">Modals</li>
+  </ul>
+</nav>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div id="page-home" class="page active">
+  <div class="container">
+    <div class="hero">
+      <div class="hero-eyebrow">QA Automation Practice</div>
+      <h1>Auto<span>Lab</span></h1>
+      <p>A complete playground for practising web automation. Every element has unique IDs, data attributes, and test hooks ready to go.</p>
+      <div class="btn-row" style="justify-content:center">
+        <button class="btn btn-primary" onclick="navigate('forms')">Start Practicing</button>
+        <button class="btn btn-secondary" onclick="navigate('tables')">View Tables</button>
+      </div>
+    </div>
+
+    <div class="feature-grid">
+      <div class="feature-card" onclick="navigate('login')">
+        <div class="feature-icon">🔐</div>
+        <h3>Login & Auth</h3>
+        <p>Practice login flows, validation, success/error states.</p>
+        <div style="margin-top:0.75rem"><span class="tag tag-green">3 scenarios</span></div>
+      </div>
+      <div class="feature-card" onclick="navigate('forms')">
+        <div class="feature-icon">📋</div>
+        <h3>Forms & Validation</h3>
+        <p>Text inputs, dropdowns, checkboxes, date pickers, and live validation.</p>
+        <div style="margin-top:0.75rem"><span class="tag tag-purple">12 fields</span></div>
+      </div>
+      <div class="feature-card" onclick="navigate('buttons')">
+        <div class="feature-icon">🔘</div>
+        <h3>Buttons & Alerts</h3>
+        <p>Click handlers, disabled states, loading states, counters, toasts.</p>
+        <div style="margin-top:0.75rem"><span class="tag tag-yellow">8 types</span></div>
+      </div>
+      <div class="feature-card" onclick="navigate('tables')">
+        <div class="feature-icon">📊</div>
+        <h3>Tables & Sorting</h3>
+        <p>Sortable columns, search filter, pagination, row actions.</p>
+        <div style="margin-top:0.75rem"><span class="tag tag-red">50 rows</span></div>
+      </div>
+      <div class="feature-card" onclick="navigate('modals')">
+        <div class="feature-icon">🪟</div>
+        <h3>Modals & Popups</h3>
+        <p>Confirmation dialogs, form modals, nested overlays, close triggers.</p>
+        <div style="margin-top:0.75rem"><span class="tag tag-green">5 variants</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="page-login" class="page">
+  <div class="container">
+    <div class="page-header">
+      <h1>Login Page</h1>
+      <p>// Practice login flows and validation • Valid credentials: admin / password123</p>
+    </div>
+
+    <div class="login-wrap">
+      <div class="card">
+        <h2>Sign In <span class="tag tag-green">id="login-form"</span></h2>
+
+        <div class="form-group">
+          <label for="login-username">Username</label>
+          <input type="text" id="login-username" data-testid="username-input" placeholder="Enter username" autocomplete="off">
+          <span class="error-msg" id="username-error"></span>
+        </div>
+
+        <div class="form-group" style="margin-top:1rem">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" data-testid="password-input" placeholder="Enter password">
+          <span class="error-msg" id="password-error"></span>
+        </div>
+
+        <div class="form-group" style="margin-top:1rem">
+          <label class="checkbox-item">
+            <input type="checkbox" id="remember-me" data-testid="remember-checkbox">
+            Remember me
+          </label>
+        </div>
+
+        <div class="alert-box" id="login-alert"></div>
+
+        <button class="btn btn-primary" id="login-btn" data-testid="login-button" onclick="handleLogin()" style="width:100%;margin-top:1.2rem">
+          Sign In
+        </button>
+
+        <div class="divider"></div>
+        <p style="font-size:0.78rem;color:var(--muted);font-family:var(--mono);text-align:center">
+          Hint: use <strong style="color:var(--accent)">admin</strong> / <strong style="color:var(--accent)">password123</strong>
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Login State</h2>
+        <p id="login-state" data-testid="login-state" style="font-family:var(--mono);font-size:0.85rem;color:var(--muted)">Not logged in</p>
+        <button class="btn btn-secondary" onclick="handleLogout()" style="margin-top:1rem" id="logout-btn" disabled>Logout</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FORMS ═══════════════ -->
+<div id="page-forms" class="page">
+  <div class="container">
+    <div class="page-header">
+      <h1>Forms & Validation</h1>
+      <p>// Live validation, multiple field types, submit feedback</p>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="card">
+      <h2>Registration Form <span class="tag tag-purple">id="registration-form"</span></h2>
+      <form id="registration-form" onsubmit="return false;" novalidate>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="reg-firstname">First Name *</label>
+            <input type="text" id="reg-firstname" data-testid="reg-firstname" placeholder="John">
+            <span class="error-msg" id="err-firstname"></span>
+          </div>
+          <div class="form-group">
+            <label for="reg-lastname">Last Name *</label>
+            <input type="text" id="reg-lastname" data-testid="reg-lastname" placeholder="Doe">
+            <span class="error-msg" id="err-lastname"></span>
+          </div>
+          <div class="form-group">
+            <label for="reg-email">Email Address *</label>
+            <input type="email" id="reg-email" data-testid="reg-email" placeholder="john@example.com">
+            <span class="error-msg" id="err-email"></span>
+          </div>
+          <div class="form-group">
+            <label for="reg-phone">Phone Number</label>
+            <input type="tel" id="reg-phone" data-testid="reg-phone" placeholder="+91 98765 43210">
+            <span class="error-msg" id="err-phone"></span>
+          </div>
+          <div class="form-group">
+            <label for="reg-password">Password *</label>
+            <input type="password" id="reg-password" data-testid="reg-password" placeholder="Min 8 characters">
+            <span class="error-msg" id="err-password"></span>
+          </div>
+          <div class="form-group">
+            <label for="reg-confirm-password">Confirm Password *</label>
+            <input type="password" id="reg-confirm-password" data-testid="reg-confirm-password" placeholder="Repeat password">
+            <span class="error-msg" id="err-confirm-password"></span>
+          </div>
+          <div class="form-group">
+            <label for="reg-dob">Date of Birth</label>
+            <input type="date" id="reg-dob" data-testid="reg-dob">
+            <span class="error-msg" id="err-dob"></span>
+          </div>
+          <div class="form-group">
+            <label for="reg-country">Country *</label>
+            <select id="reg-country" data-testid="reg-country">
+              <option value="">Select country</option>
+              <option value="IN">India</option>
+              <option value="US">United States</option>
+              <option value="UK">United Kingdom</option>
+              <option value="CA">Canada</option>
+              <option value="AU">Australia</option>
+              <option value="DE">Germany</option>
+              <option value="FR">France</option>
+            </select>
+            <span class="error-msg" id="err-country"></span>
+          </div>
+          <div class="form-group full">
+            <label for="reg-bio">Bio</label>
+            <textarea id="reg-bio" data-testid="reg-bio" placeholder="Tell us about yourself (max 200 chars)" maxlength="200"></textarea>
+          </div>
+          <div class="form-group full">
+            <label>Interests</label>
+            <div class="checkbox-group" id="interests-group">
+              <label class="checkbox-item"><input type="checkbox" value="automation" data-testid="interest-automation"> Automation</label>
+              <label class="checkbox-item"><input type="checkbox" value="testing" data-testid="interest-testing"> Testing</label>
+              <label class="checkbox-item"><input type="checkbox" value="development" data-testid="interest-development"> Development</label>
+              <label class="checkbox-item"><input type="checkbox" value="devops" data-testid="interest-devops"> DevOps</label>
+            </div>
+          </div>
+          <div class="form-group full">
+            <label>Experience Level *</label>
+            <div class="checkbox-group" id="experience-group">
+              <label class="checkbox-item"><input type="radio" name="experience" value="beginner" data-testid="exp-beginner"> Beginner</label>
+              <label class="checkbox-item"><input type="radio" name="experience" value="intermediate" data-testid="exp-intermediate"> Intermediate</label>
+              <label class="checkbox-item"><input type="radio" name="experience" value="expert" data-testid="exp-expert"> Expert</label>
+            </div>
+            <span class="error-msg" id="err-experience"></span>
+          </div>
+          <div class="form-group full">
+            <label class="checkbox-item" style="text-transform:none;font-size:0.85rem;color:var(--text)">
+              <input type="checkbox" id="reg-terms" data-testid="reg-terms">
+              I agree to the Terms & Conditions *
+            </label>
+            <span class="error-msg" id="err-terms"></span>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button type="button" class="btn btn-primary" id="reg-submit" data-testid="reg-submit" onclick="submitRegistration()">Register</button>
+          <button type="reset" class="btn btn-secondary" id="reg-reset" data-testid="reg-reset" onclick="resetForm()">Reset</button>
+        </div>
+      </form>
+
+      <div class="alert-box" id="reg-alert"></div>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card">
+      <h2>Search Form <span class="tag tag-yellow">id="search-form"</span></h2>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+        <input type="text" id="search-query" data-testid="search-input" placeholder="Search for anything..." style="flex:1;min-width:180px">
+        <select id="search-category" data-testid="search-category" style="width:160px">
+          <option value="all">All Categories</option>
+          <option value="products">Products</option>
+          <option value="users">Users</option>
+          <option value="orders">Orders</option>
+        </select>
+        <button class="btn btn-primary" id="search-btn" data-testid="search-btn" onclick="doSearch()">Search</button>
+      </div>
+      <div id="search-result" style="font-family:var(--mono);font-size:0.8rem;color:var(--muted);margin-top:1rem;min-height:1.2rem"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ BUTTONS ═══════════════ -->
+<div id="page-buttons" class="page">
+  <div class="container">
+    <div class="page-header">
+      <h1>Buttons & Alerts</h1>
+      <p>// Click states, disabled, loading, counter, alerts, and toasts</p>
+    </div>
+
+    <div class="two-col">
+      <!-- Button Types -->
+      <div class="card">
+        <h2>Button Variants</h2>
+        <div class="btn-grid">
+          <button class="btn btn-primary" id="btn-primary" data-testid="btn-primary" onclick="logClick(this)">Primary</button>
+          <button class="btn btn-secondary" id="btn-secondary" data-testid="btn-secondary" onclick="logClick(this)">Secondary</button>
+          <button class="btn btn-danger" id="btn-danger" data-testid="btn-danger" onclick="logClick(this)">Danger</button>
+          <button class="btn btn-purple" id="btn-purple" data-testid="btn-purple" onclick="logClick(this)">Purple</button>
+          <button class="btn btn-yellow" id="btn-yellow" data-testid="btn-yellow" onclick="logClick(this)">Yellow</button>
+          <button class="btn btn-primary" id="btn-disabled" data-testid="btn-disabled" disabled>Disabled</button>
+        </div>
+        <div id="result-area" data-testid="click-result">// Click a button to see result</div>
+      </div>
+
+      <!-- Counter -->
+      <div class="card">
+        <h2>Click Counter <span class="tag tag-green">id="counter-section"</span></h2>
+        <div class="counter-display" id="counter-display" data-testid="counter-value">0</div>
+        <div class="btn-row" style="justify-content:center">
+          <button class="btn btn-secondary" id="btn-decrement" data-testid="btn-decrement" onclick="changeCounter(-1)">− Decrement</button>
+          <button class="btn btn-primary" id="btn-increment" data-testid="btn-increment" onclick="changeCounter(1)">+ Increment</button>
+          <button class="btn btn-danger" id="btn-reset-counter" data-testid="btn-reset-counter" onclick="resetCounter()">Reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading button -->
+    <div class="card">
+      <h2>Loading State Button</h2>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem">Click to simulate async action with loading state.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-loading" data-testid="btn-loading" onclick="simulateLoading(this)">Submit Request</button>
+        <span id="loading-status" data-testid="loading-status" style="font-family:var(--mono);font-size:0.8rem;color:var(--muted)">idle</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <h2 style="margin-bottom:1rem">Progress Bar <span class="tag tag-purple">id="progress-section"</span></h2>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progress-bar" data-testid="progress-bar"></div>
+      </div>
+      <div style="font-family:var(--mono);font-size:0.78rem;color:var(--muted);margin-top:0.3rem">
+        Progress: <span id="progress-value" data-testid="progress-value">0</span>%
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-start-progress" data-testid="btn-start-progress" onclick="startProgress()">Start Progress</button>
+        <button class="btn btn-secondary" id="btn-reset-progress" data-testid="btn-reset-progress" onclick="resetProgress()">Reset</button>
+      </div>
+    </div>
+
+    <!-- Alert Triggers -->
+    <div class="card">
+      <h2>Alert Triggers</h2>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-alert-success" data-testid="btn-alert-success" onclick="showAlert('success')">Success Alert</button>
+        <button class="btn btn-danger" id="btn-alert-error" data-testid="btn-alert-error" onclick="showAlert('error')">Error Alert</button>
+        <button class="btn btn-purple" id="btn-alert-info" data-testid="btn-alert-info" onclick="showAlert('info')">Info Alert</button>
+        <button class="btn btn-yellow" id="btn-alert-warning" data-testid="btn-alert-warning" onclick="showAlert('warning')">Warning Alert</button>
+        <button class="btn btn-secondary" id="btn-toast" data-testid="btn-toast" onclick="showToast()">Show Toast</button>
+        <button class="btn btn-secondary" id="btn-browser-alert" data-testid="btn-browser-alert" onclick="alert('This is a native browser alert!')">Browser Alert</button>
+        <button class="btn btn-secondary" id="btn-browser-confirm" data-testid="btn-browser-confirm" onclick="handleConfirm()">Browser Confirm</button>
+        <button class="btn btn-secondary" id="btn-browser-prompt" data-testid="btn-browser-prompt" onclick="handlePrompt()">Browser Prompt</button>
+      </div>
+      <div class="alert-box" id="main-alert"></div>
+      <div id="confirm-result" data-testid="confirm-result" style="font-family:var(--mono);font-size:0.78rem;color:var(--muted);margin-top:0.75rem;min-height:1.2rem"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TABLES ═══════════════ -->
+<div id="page-tables" class="page">
+  <div class="container">
+    <div class="page-header">
+      <h1>Tables & Sorting</h1>
+      <p>// Sortable columns, search filter, pagination • 50 rows of data</p>
+    </div>
+
+    <div class="card">
+      <h2>User Data Table <span class="tag tag-red">id="data-table"</span></h2>
+
+      <div class="table-controls">
+        <input class="search-input" type="text" id="table-search" data-testid="table-search" placeholder="Search name, email, role..." oninput="filterTable()">
+        <select id="table-status-filter" data-testid="table-status-filter" style="width:140px" onchange="filterTable()">
+          <option value="">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+          <option value="Pending">Pending</option>
+        </select>
+        <span id="table-count" data-testid="table-count" style="font-family:var(--mono);font-size:0.78rem;color:var(--muted);margin-left:auto"></span>
+      </div>
+
+      <div style="overflow-x:auto">
+        <table id="data-table" data-testid="data-table">
+          <thead>
+            <tr>
+              <th onclick="sortTable('id')" data-col="id" data-testid="col-id"># <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('name')" data-col="name" data-testid="col-name">Name <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('email')" data-col="email" data-testid="col-email">Email <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('role')" data-col="role" data-testid="col-role">Role <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('age')" data-col="age" data-testid="col-age">Age <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('status')" data-col="status" data-testid="col-status">Status <span class="sort-icon">↕</span></th>
+              <th data-testid="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="table-body" data-testid="table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="pagination" id="pagination" data-testid="pagination"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+<div id="page-modals" class="page">
+  <div class="container">
+    <div class="page-header">
+      <h1>Modals & Popups</h1>
+      <p>// Multiple modal types, close via X, ESC key, backdrop click, or button</p>
+    </div>
+
+    <div class="card">
+      <h2>Modal Triggers</h2>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-modal-info" data-testid="btn-modal-info" onclick="openModal('modal-info')">Info Modal</button>
+        <button class="btn btn-danger" id="btn-modal-confirm" data-testid="btn-modal-confirm" onclick="openModal('modal-confirm')">Confirm Dialog</button>
+        <button class="btn btn-purple" id="btn-modal-form" data-testid="btn-modal-form" onclick="openModal('modal-form')">Form Modal</button>
+        <button class="btn btn-yellow" id="btn-modal-large" data-testid="btn-modal-large" onclick="openModal('modal-large')">Large Modal</button>
+        <button class="btn btn-secondary" id="btn-modal-nested" data-testid="btn-modal-nested" onclick="openModal('modal-nested')">Nested Modal</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Modal State Log <span class="tag tag-green">id="modal-log"</span></h2>
+      <div id="modal-log" data-testid="modal-log" style="font-family:var(--mono);font-size:0.78rem;color:var(--muted);line-height:1.8;min-height:2rem">
+        No modal events yet...
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODALS HTML ═══════════════ -->
+
+<!-- Info Modal -->
+<div class="modal-overlay" id="modal-info" data-testid="modal-info">
+  <div class="modal" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modal-info-close" data-testid="modal-info-close" onclick="closeModal('modal-info')">✕</button>
+    <h3>ℹ️ Information</h3>
+    <p>This is an informational modal. It contains details you might want to read before proceeding. You can close it using the × button, pressing ESC, or clicking outside.</p>
+    <div class="modal-footer">
+      <button class="btn btn-primary" id="modal-info-ok" data-testid="modal-info-ok" onclick="closeModal('modal-info')">Got it</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="modal-confirm" data-testid="modal-confirm">
+  <div class="modal">
+    <button class="modal-close" id="modal-confirm-close" onclick="closeModal('modal-confirm')">✕</button>
+    <h3>⚠️ Confirm Action</h3>
+    <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="modal-confirm-cancel" data-testid="modal-confirm-cancel" onclick="closeModal('modal-confirm','cancelled')">Cancel</button>
+      <button class="btn btn-danger" id="modal-confirm-delete" data-testid="modal-confirm-delete" onclick="closeModal('modal-confirm','confirmed')">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Form Modal -->
+<div class="modal-overlay" id="modal-form" data-testid="modal-form">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-form')">✕</button>
+    <h3>✏️ Edit Profile</h3>
+    <p>Update your profile details below.</p>
+    <div class="form-group" style="margin-bottom:1rem">
+      <label for="modal-username">Username</label>
+      <input type="text" id="modal-username" data-testid="modal-username" placeholder="Enter username">
+    </div>
+    <div class="form-group" style="margin-bottom:1rem">
+      <label for="modal-email">Email</label>
+      <input type="email" id="modal-email" data-testid="modal-email" placeholder="Enter email">
+    </div>
+    <div class="form-group" style="margin-bottom:1.5rem">
+      <label for="modal-role">Role</label>
+      <select id="modal-role" data-testid="modal-role">
+        <option>Admin</option>
+        <option>Editor</option>
+        <option>Viewer</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-form')">Cancel</button>
+      <button class="btn btn-primary" id="modal-form-save" data-testid="modal-form-save" onclick="saveFormModal()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Large Modal -->
+<div class="modal-overlay" id="modal-large" data-testid="modal-large">
+  <div class="modal" style="max-width:700px">
+    <button class="modal-close" onclick="closeModal('modal-large')">✕</button>
+    <h3>📄 Terms & Conditions</h3>
+    <p>Please read the following terms carefully before proceeding.</p>
+    <div style="max-height:220px;overflow-y:auto;background:var(--surface2);border-radius:8px;padding:1rem;margin-bottom:1.5rem;font-size:0.82rem;line-height:1.7;color:var(--muted)" id="modal-terms-content">
+      <strong style="color:var(--text)">1. Acceptance of Terms</strong><br>
+      By accessing this practice website, you agree to these terms.<br><br>
+      <strong style="color:var(--text)">2. Usage</strong><br>
+      This site is intended for QA automation practice only. Do not use scraped data in production.<br><br>
+      <strong style="color:var(--text)">3. Data</strong><br>
+      All data on this site is randomly generated and fictitious. Any resemblance to real persons or entities is coincidental.<br><br>
+      <strong style="color:var(--text)">4. Limitation of Liability</strong><br>
+      This tool is provided "as is" without warranty of any kind.<br><br>
+      <strong style="color:var(--text)">5. Changes</strong><br>
+      We reserve the right to modify these terms at any time.
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-large','declined')">Decline</button>
+      <button class="btn btn-primary" id="modal-accept-terms" data-testid="modal-accept-terms" onclick="closeModal('modal-large','accepted')">Accept</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nested Modal -->
+<div class="modal-overlay" id="modal-nested" data-testid="modal-nested">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-nested')">✕</button>
+    <h3>🔁 Nested Modal Test</h3>
+    <p>This modal can open another modal on top of it. Useful for testing stacked overlay handling.</p>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-nested')">Close</button>
+      <button class="btn btn-purple" id="btn-open-inner-modal" data-testid="btn-open-inner-modal" onclick="openModal('modal-inner')">Open Inner Modal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inner Modal -->
+<div class="modal-overlay" id="modal-inner" data-testid="modal-inner" style="z-index:1100">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-inner')">✕</button>
+    <h3>📦 Inner Modal</h3>
+    <p>You successfully opened a nested modal! This tests your framework's ability to handle multiple overlay layers.</p>
+    <div class="modal-footer">
+      <button class="btn btn-primary" id="modal-inner-close-btn" data-testid="modal-inner-close-btn" onclick="closeModal('modal-inner','inner-closed')">Close Inner</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script>
+// ═══════════ NAVIGATION ═══════════
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelector('[data-page="' + page + '"]').classList.add('active');
+}
+
+document.querySelectorAll('.nav-tab').forEach(tab => {
+  tab.addEventListener('click', () => navigate(tab.dataset.page));
+});
+
+// ═══════════ LOGIN ═══════════
+let loggedIn = false;
+
+function handleLogin() {
+  const user = document.getElementById('login-username').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const alert = document.getElementById('login-alert');
+
+  document.getElementById('username-error').textContent = '';
+  document.getElementById('password-error').textContent = '';
+
+  if (!user) { document.getElementById('username-error').textContent = 'Username is required'; return; }
+  if (!pass) { document.getElementById('password-error').textContent = 'Password is required'; return; }
+
+  if (user === 'admin' && pass === 'password123') {
+    alert.className = 'alert-box alert-success show';
+    alert.textContent = '✓ Login successful! Welcome, ' + user;
+    loggedIn = true;
+    document.getElementById('login-state').textContent = 'Logged in as: ' + user;
+    document.getElementById('login-state').style.color = 'var(--accent)';
+    document.getElementById('logout-btn').disabled = false;
+    document.getElementById('login-btn').disabled = true;
+  } else {
+    alert.className = 'alert-box alert-error show';
+    alert.textContent = '✗ Invalid username or password';
+    document.getElementById('login-username').classList.add('error');
+    document.getElementById('login-password').classList.add('error');
+  }
+}
+
+function handleLogout() {
+  loggedIn = false;
+  document.getElementById('login-state').textContent = 'Not logged in';
+  document.getElementById('login-state').style.color = 'var(--muted)';
+  document.getElementById('logout-btn').disabled = true;
+  document.getElementById('login-btn').disabled = false;
+  document.getElementById('login-alert').className = 'alert-box';
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+  document.getElementById('login-username').classList.remove('error','success');
+  document.getElementById('login-password').classList.remove('error','success');
+}
+
+// ═══════════ REGISTRATION FORM ═══════════
+function validateField(id, errId, rule, msg) {
+  const el = document.getElementById(id);
+  const val = el ? el.value.trim() : '';
+  const valid = rule(val);
+  if (el) { el.classList.toggle('error', !valid); el.classList.toggle('success', valid); }
+  document.getElementById(errId).textContent = valid ? '' : msg;
+  return valid;
+}
+
+function submitRegistration() {
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  let ok = true;
+  ok = validateField('reg-firstname', 'err-firstname', v => v.length >= 2, 'Min 2 characters') && ok;
+  ok = validateField('reg-lastname', 'err-lastname', v => v.length >= 2, 'Min 2 characters') && ok;
+  ok = validateField('reg-email', 'err-email', v => emailRe.test(v), 'Invalid email address') && ok;
+  ok = validateField('reg-password', 'err-password', v => v.length >= 8, 'Min 8 characters') && ok;
+  const pw = document.getElementById('reg-password').value;
+  const cpw = document.getElementById('reg-confirm-password').value;
+  const cpwEl = document.getElementById('reg-confirm-password');
+  const cpwOk = cpw === pw && cpw !== '';
+  cpwEl.classList.toggle('error', !cpwOk);
+  document.getElementById('err-confirm-password').textContent = cpwOk ? '' : 'Passwords do not match';
+  ok = cpwOk && ok;
+  ok = validateField('reg-country', 'err-country', v => v !== '', 'Please select a country') && ok;
+  const exp = document.querySelector('input[name="experience"]:checked');
+  document.getElementById('err-experience').textContent = exp ? '' : 'Please select experience level';
+  ok = !!exp && ok;
+  const terms = document.getElementById('reg-terms').checked;
+  document.getElementById('err-terms').textContent = terms ? '' : 'You must accept the terms';
+  ok = terms && ok;
+
+  const alertEl = document.getElementById('reg-alert');
+  if (ok) {
+    alertEl.className = 'alert-box alert-success show';
+    alertEl.textContent = '✓ Registration successful! Form submitted with all valid data.';
+  } else {
+    alertEl.className = 'alert-box alert-error show';
+    alertEl.textContent = '✗ Please fix the errors above before submitting.';
+  }
+}
+
+function resetForm() {
+  document.querySelectorAll('#registration-form input, #registration-form select, #registration-form textarea').forEach(el => {
+    el.classList.remove('error','success');
+  });
+  document.querySelectorAll('.error-msg').forEach(el => el.textContent = '');
+  document.getElementById('reg-alert').className = 'alert-box';
+}
+
+function doSearch() {
+  const q = document.getElementById('search-query').value.trim();
+  const cat = document.getElementById('search-category').value;
+  const res = document.getElementById('search-result');
+  if (!q) { res.textContent = '// Enter a search query'; return; }
+  res.textContent = `// Searching "${q}" in category: ${cat} → 0 results (demo)`;
+}
+
+// ═══════════ BUTTONS ═══════════
+let clickCount = 0;
+
+function logClick(btn) {
+  clickCount++;
+  document.getElementById('result-area').textContent = `// Clicked: #${btn.id} (data-testid="${btn.dataset.testid}") — total clicks: ${clickCount}`;
+}
+
+let counter = 0;
+function changeCounter(delta) {
+  counter += delta;
+  document.getElementById('counter-display').textContent = counter;
+}
+
+function resetCounter() {
+  counter = 0;
+  document.getElementById('counter-display').textContent = 0;
+}
+
+function simulateLoading(btn) {
+  const status = document.getElementById('loading-status');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Loading...';
+  status.textContent = 'loading';
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = 'Submit Request';
+    status.textContent = 'completed ✓';
+    showToastMsg('Request completed successfully!');
+  }, 2500);
+}
+
+let progressInterval;
+let progressVal = 0;
+
+function startProgress() {
+  clearInterval(progressInterval);
+  progressVal = 0;
+  document.getElementById('btn-start-progress').disabled = true;
+  progressInterval = setInterval(() => {
+    progressVal = Math.min(progressVal + Math.random() * 8 + 2, 100);
+    document.getElementById('progress-bar').style.width = progressVal + '%';
+    document.getElementById('progress-value').textContent = Math.floor(progressVal);
+    if (progressVal >= 100) {
+      clearInterval(progressInterval);
+      document.getElementById('btn-start-progress').disabled = false;
+    }
+  }, 150);
+}
+
+function resetProgress() {
+  clearInterval(progressInterval);
+  progressVal = 0;
+  document.getElementById('progress-bar').style.width = '0%';
+  document.getElementById('progress-value').textContent = '0';
+  document.getElementById('btn-start-progress').disabled = false;
+}
+
+function showAlert(type) {
+  const msgs = {
+    success: '✓ Operation completed successfully.',
+    error: '✗ An error occurred. Please try again.',
+    info: 'ℹ This is an informational message.',
+    warning: '⚠ Warning: this action may have side effects.'
+  };
+  const el = document.getElementById('main-alert');
+  el.className = `alert-box alert-${type} show`;
+  el.textContent = msgs[type];
+}
+
+function handleConfirm() {
+  const res = confirm('Do you confirm this action?');
+  document.getElementById('confirm-result').textContent = `// confirm() returned: ${res}`;
+}
+
+function handlePrompt() {
+  const res = prompt('Enter your name:');
+  document.getElementById('confirm-result').textContent = `// prompt() returned: "${res}"`;
+}
+
+function showToast() { showToastMsg('This is a toast notification!'); }
+
+function showToastMsg(msg) {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.setAttribute('data-testid', 'toast-message');
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ═══════════ TABLE ═══════════
+const firstNames = ['Alice','Bob','Carol','David','Eve','Frank','Grace','Hank','Iris','Jack','Karen','Leo','Mia','Nate','Olivia','Paul','Quinn','Rachel','Sam','Tina','Uma','Victor','Wendy','Xavier','Yara','Zoe','Arjun','Priya','Rohan','Sneha'];
+const lastNames = ['Smith','Johnson','Williams','Brown','Jones','Garcia','Miller','Davis','Wilson','Taylor','Moore','Anderson','Thomas','Jackson','White','Harris','Martin','Thompson','Lee','Lewis'];
+const roles = ['Admin','Editor','Viewer','Manager','Developer','Analyst','Designer','QA Engineer'];
+const statuses = ['Active','Inactive','Pending'];
+
+const tableData = Array.from({length: 50}, (_, i) => ({
+  id: i + 1,
+  name: firstNames[i % firstNames.length] + ' ' + lastNames[i % lastNames.length],
+  email: firstNames[i % firstNames.length].toLowerCase() + (i+1) + '@example.com',
+  role: roles[i % roles.length],
+  age: 22 + (i * 13 % 38),
+  status: statuses[i % 3]
+}));
+
+let filteredData = [...tableData];
+let sortCol = 'id';
+let sortDir = 1;
+let currentPage = 1;
+const pageSize = 10;
+
+function filterTable() {
+  const q = document.getElementById('table-search').value.toLowerCase();
+  const status = document.getElementById('table-status-filter').value;
+  filteredData = tableData.filter(r =>
+    (!q || r.name.toLowerCase().includes(q) || r.email.toLowerCase().includes(q) || r.role.toLowerCase().includes(q)) &&
+    (!status || r.status === status)
+  );
+  currentPage = 1;
+  renderTable();
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
+  filteredData.sort((a, b) => {
+    const av = a[col], bv = b[col];
+    return (av < bv ? -1 : av > bv ? 1 : 0) * sortDir;
+  });
+  document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
+  document.querySelector(`th[data-col="${col}"]`).classList.add('sorted');
+  renderTable();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('table-body');
+  const start = (currentPage - 1) * pageSize;
+  const page = filteredData.slice(start, start + pageSize);
+  document.getElementById('table-count').textContent = `Showing ${start+1}–${Math.min(start+pageSize, filteredData.length)} of ${filteredData.length}`;
+
+  tbody.innerHTML = page.map(r => `
+    <tr data-testid="table-row" data-id="${r.id}">
+      <td><span style="font-family:var(--mono);color:var(--muted)">${r.id}</span></td>
+      <td data-testid="cell-name">${r.name}</td>
+      <td data-testid="cell-email" style="font-family:var(--mono);font-size:0.78rem">${r.email}</td>
+      <td data-testid="cell-role"><span class="tag tag-purple">${r.role}</span></td>
+      <td data-testid="cell-age">${r.age}</td>
+      <td data-testid="cell-status"><span class="status-badge status-${r.status.toLowerCase()}">${r.status}</span></td>
+      <td>
+        <div style="display:flex;gap:0.4rem">
+          <button class="btn btn-secondary" style="padding:0.3rem 0.7rem;font-size:0.72rem" data-testid="btn-view-${r.id}" onclick="rowAction('view',${r.id})">View</button>
+          <button class="btn btn-danger" style="padding:0.3rem 0.7rem;font-size:0.72rem" data-testid="btn-delete-${r.id}" onclick="rowAction('delete',${r.id})">Del</button>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  renderPagination();
+}
+
+function renderPagination() {
+  const total = Math.ceil(filteredData.length / pageSize);
+  const pag = document.getElementById('pagination');
+  let html = `<button class="page-btn" data-testid="btn-prev-page" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>← Prev</button>`;
+  for (let i = 1; i <= total; i++) {
+    html += `<button class="page-btn ${i===currentPage?'active':''}" data-testid="btn-page-${i}" onclick="goPage(${i})">${i}</button>`;
+  }
+  html += `<button class="page-btn" data-testid="btn-next-page" onclick="goPage(${currentPage+1})" ${currentPage===total?'disabled':''}>Next →</button>`;
+  pag.innerHTML = html;
+}
+
+function goPage(p) {
+  const total = Math.ceil(filteredData.length / pageSize);
+  if (p < 1 || p > total) return;
+  currentPage = p;
+  renderTable();
+}
+
+function rowAction(action, id) {
+  showToastMsg(`${action.charAt(0).toUpperCase()+action.slice(1)} action on row #${id}`);
+}
+
+renderTable();
+
+// ═══════════ MODALS ═══════════
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  logModal('opened: #' + id);
+}
+
+function closeModal(id, reason) {
+  document.getElementById(id).classList.remove('open');
+  logModal('closed: #' + id + (reason ? ' (' + reason + ')' : ''));
+}
+
+function logModal(msg) {
+  const log = document.getElementById('modal-log');
+  const time = new Date().toLocaleTimeString();
+  log.innerHTML = `[${time}] ${msg}<br>` + log.innerHTML;
+}
+
+function saveFormModal() {
+  const u = document.getElementById('modal-username').value;
+  const e = document.getElementById('modal-email').value;
+  closeModal('modal-form', 'saved');
+  showToastMsg(`Profile saved: ${u || 'user'}`);
+}
+
+// Close modal on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeModal(overlay.id, 'backdrop-click');
+  });
+});
+
+// ESC key
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const open = document.querySelector('.modal-overlay.open');
+    if (open) closeModal(open.id, 'esc-key');
+  }
+});
+</script>
+</body>
+</html>
