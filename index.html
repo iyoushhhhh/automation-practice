@@ -607,6 +607,52 @@
     margin-top: 1rem;
     min-height: 1.5rem;
   }
+
+  /* ── FOOTER WATERMARK ── */
+  .site-footer {
+    border-top: 1px solid var(--border);
+    margin-top: 4rem;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    background: var(--surface);
+  }
+
+  .watermark {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .watermark span {
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* ── LIST STYLES ── */
+  .tips-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+
+  .tips-list li {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-family: var(--mono);
+    padding: 0.5rem 0.75rem;
+    background: var(--surface2);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
+  }
+
+  .tips-list li::before {
+    content: '// ';
+    color: var(--accent);
+    font-weight: 700;
+  }
 </style>
 </head>
 <body>
@@ -634,6 +680,22 @@
         <button class="btn btn-primary" onclick="navigate('forms')">Start Practicing</button>
         <button class="btn btn-secondary" onclick="navigate('tables')">View Tables</button>
       </div>
+    </div>
+
+    <div class="card" style="margin-bottom:2rem">
+      <h2>🧪 What You Can Practice</h2>
+      <ul class="tips-list" id="tips-list">
+        <li>Locating elements by ID & data-testid</li>
+        <li>Form filling & validation assertions</li>
+        <li>Handling native browser alerts</li>
+        <li>Sorting & filtering tables</li>
+        <li>Modal open / close flows</li>
+        <li>Waiting for loading states</li>
+        <li>Pagination navigation</li>
+        <li>Checkbox & radio interactions</li>
+        <li>Toast notification detection</li>
+        <li>Login & logout state changes</li>
+      </ul>
     </div>
 
     <div class="feature-grid">
@@ -1439,5 +1501,10 @@ document.addEventListener('keydown', e => {
   }
 });
 </script>
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="site-footer" id="site-footer">
+  <p class="watermark">Built for QA Automation Practice &nbsp;·&nbsp; Crafted by <span>iyoushhhhh</span> &nbsp;·&nbsp; AutoLab © 2026</p>
+</footer>
+
 </body>
 </html>
